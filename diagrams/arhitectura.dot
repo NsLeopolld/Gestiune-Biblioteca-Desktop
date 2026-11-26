@@ -1,0 +1,47 @@
+// Schema arhitecturii modulare (3 straturi) - Gestionarea unei biblioteci
+// Randare: dot -Tpng -Gdpi=130 arhitectura.dot -o arhitectura.png
+digraph Arhitectura {
+    graph [rankdir=TB, fontname="DejaVu Sans", nodesep=0.3, ranksep=0.55, pad=0.4, compound=true,
+           label="Arhitectura modulară - separarea UI / logică / date", labelloc=t, fontsize=16];
+    node  [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", color="#3B5B92"];
+    edge  [fontname="DejaVu Sans", fontsize=9, color="#444444", arrowhead=vee];
+
+    subgraph cluster_ui {
+        label="1. Stratul de prezentare (UI)"; fontsize=13; style="rounded,filled"; fillcolor="#EAF2FF"; color="#3B5B92";
+        node [fillcolor="#FFFFFF"];
+        V_Catalog  [label="CatalogView\n(listă cărți + filtrare/căutare)"];
+        V_Carte    [label="CarteDialog\n(modal: adăugare / editare)"];
+        V_Imprumut [label="ImprumutDialog\n(împrumut / retur)"];
+        V_Login    [label="LoginView"];
+        VM         [label="Controllere / ViewModel-uri\n(legare date, comenzi, validare de formular)", fillcolor="#DCE8FF"];
+        { V_Login V_Catalog V_Carte V_Imprumut } -> VM [arrowhead=none, style=dotted];
+    }
+
+    subgraph cluster_bl {
+        label="2. Stratul logicii aplicației (Business)"; fontsize=13; style="rounded,filled"; fillcolor="#EFF8EC"; color="#3E7B3A";
+        node [fillcolor="#FFFFFF", color="#3E7B3A"];
+        S_Carte    [label="CarteService\n(CRUD, căutare, reguli ISBN)"];
+        S_Imprumut [label="ImprumutService\n(disponibilitate, termen,\npenalități)"];
+        S_Cititor  [label="CititorService"];
+        S_Auth     [label="AuthService"];
+        Domain     [label="Model de domeniu\nCarte · Exemplar · Cititor · Imprumut · Utilizator", fillcolor="#E2F2DD"];
+    }
+
+    subgraph cluster_dal {
+        label="3. Stratul de date (Data Access)"; fontsize=13; style="rounded,filled"; fillcolor="#FFF5E6"; color="#A86B12";
+        node [fillcolor="#FFFFFF", color="#A86B12"];
+        R_If  [label="Interfețe Repository\nICarteRepository · IImprumutRepository\nICititorRepository · IUtilizatorRepository"];
+        R_Imp [label="Implementări Repository\n(SQL / ORM)"];
+        R_If -> R_Imp [arrowhead=onormal, style=dashed, dir=back, arrowtail=onormal, arrowhead=none, label=" implementează"];
+    }
+
+    DB [label="Bază de date locală\n(ex. SQLite)", shape=cylinder, style=filled, fillcolor="#F4E3C8", color="#A86B12"];
+
+    VM -> S_Carte    [lhead=cluster_bl, label=" apeluri servicii\n (fără acces direct la DB)"];
+    Domain -> R_If [ltail=cluster_bl, lhead=cluster_dal, label=" serviciile depind doar\n de interfețe (DI)"];
+    R_Imp -> DB;
+
+    // aranjare internă
+    S_Carte -> Domain [style=invis]; S_Imprumut -> Domain [style=invis];
+    S_Cititor -> Domain [style=invis]; S_Auth -> Domain [style=invis];
+}
