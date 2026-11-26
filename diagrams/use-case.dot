@@ -1,0 +1,59 @@
+// Diagrama UML a cazurilor de utilizare - Gestionarea unei biblioteci
+// Randare: dot -Tpng -Gdpi=130 use-case.dot -o use-case.png
+digraph UseCase {
+    graph [rankdir=LR, fontname="DejaVu Sans", fontsize=12, nodesep=0.35, ranksep=1.1,
+           label="Diagrama cazurilor de utilizare - Gestionarea unei biblioteci", labelloc=t, fontsize=16, pad=0.4];
+    node  [fontname="DejaVu Sans", fontsize=11];
+    edge  [fontname="DejaVu Sans", fontsize=9, arrowhead=none];
+
+    // ---- Actori ----
+    Bibliotecar   [shape=none, image="actor.png", imagepos=tc, labelloc=b, height=1.3, label="Bibliotecar", fontsize=12];
+    Administrator [shape=none, image="actor.png", imagepos=tc, labelloc=b, height=1.3, label="Administrator", fontsize=12];
+    Cititor       [shape=none, image="actor.png", imagepos=tc, labelloc=b, height=1.3, label="Cititor", fontsize=12];
+
+    subgraph cluster_sistem {
+        label="Aplicația desktop „Gestionarea unei biblioteci”";
+        fontsize=13; style=rounded; color="#555555"; margin=18;
+        node [shape=ellipse, style=filled, fillcolor="#EEF3FB", color="#3B5B92"];
+
+        UC_Auth      [label="Autentificare"];
+        UC_Catalog   [label="Vizualizează catalogul\ncărților"];
+        UC_Filtru    [label="Filtrează / caută cărți\n(titlu, autor, ISBN, gen)"];
+        UC_Adauga    [label="Înregistrează\ncarte nouă"];
+        UC_Editeaza  [label="Editează / șterge\ncarte"];
+        UC_Validare  [label="Validează datele\ncărții (ISBN, câmpuri)"];
+        UC_Cititor   [label="Gestionează\ncititori"];
+        UC_Imprumut  [label="Înregistrează\nîmprumut"];
+        UC_Disp      [label="Verifică disponibilitatea\nexemplarului"];
+        UC_Retur     [label="Înregistrează\nretur"];
+        UC_Penal     [label="Calculează penalitate\nde întârziere"];
+        UC_Istoric   [label="Vizualizează împrumuturi\nactive / restante"];
+        UC_Utiliz    [label="Gestionează conturile\nbibliotecarilor"];
+    }
+
+    // ---- Asocieri actori ----
+    Bibliotecar -> UC_Auth;
+    Bibliotecar -> UC_Catalog;
+    Bibliotecar -> UC_Adauga;
+    Bibliotecar -> UC_Editeaza;
+    Bibliotecar -> UC_Cititor;
+    Bibliotecar -> UC_Imprumut;
+    Bibliotecar -> UC_Retur;
+    Bibliotecar -> UC_Istoric;
+    Administrator -> UC_Utiliz;
+    UC_Imprumut -> Cititor [dir=none];
+    UC_Retur    -> Cititor [dir=none];
+    UC_Disp -> Cititor [style=invis]; UC_Penal -> Cititor [style=invis];  // doar pentru aranjare: Cititor în dreapta
+
+    // Generalizare: Administratorul este un Bibliotecar cu drepturi extinse
+    Administrator -> Bibliotecar [arrowhead=onormal, style=solid, constraint=false];
+
+    // ---- <<include>> / <<extend>> ----
+    edge [style=dashed, arrowhead=vee];
+    UC_Adauga   -> UC_Validare [label="«include»"];
+    UC_Editeaza -> UC_Validare [label="«include»"];
+    UC_Imprumut -> UC_Disp     [label="«include»"];
+    // muchiile «extend» sunt inversate doar pentru aranjare (dir=back): săgeata rămâne de la extensie spre cazul de bază
+    UC_Catalog  -> UC_Filtru   [label="«extend»", dir=back, arrowtail=vee];
+    UC_Retur    -> UC_Penal    [label="«extend»\n[întârziere]", dir=back, arrowtail=vee];
+}
