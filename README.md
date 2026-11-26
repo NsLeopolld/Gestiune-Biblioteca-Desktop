@@ -6,7 +6,7 @@ Momentan proiectul este în faza de proiectare (prototip UI, diagrame UML, arhit
 
 ## Prototip Figma
 
-Link: https://www.figma.com/proto/DE_COMPLETAT
+Link: [Figma prototype](https://www.figma.com/design/BhxGQDExxZLql5R8fKJJ7T/Gestionarea-unei-biblioteci?m=auto&t=HbYTlRVbfFy0hidi-1)
 
 Ecranele din prototip:
 1. Catalogul cărților, cu căutare și filtre (gen, disponibilitate, an)
